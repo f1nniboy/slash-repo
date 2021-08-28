@@ -1,0 +1,15 @@
+#!/bin/sh -e
+
+patch -p1 < portability.patch
+
+# LTO is broken.
+export CFLAGS="${BASE_FLAGS}"
+
+./configure \
+	--prefix=/usr \
+	--disable-swscale \
+	--enable-pic \
+	--enable-shared
+
+gmake
+gmake install

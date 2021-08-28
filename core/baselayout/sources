@@ -1,0 +1,10 @@
+files/fstab
+files/issue
+files/passwd
+files/shells
+files/group
+files/mime.types
+files/profile
+files/host.conf
+files/os-release
+files/shadow

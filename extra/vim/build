@@ -1,0 +1,25 @@
+#!/bin/sh -e
+
+patch -p1 < feature-h.patch
+
+./configure \
+	--prefix=/usr \
+	--with-features=normal
+
+make
+make install
+
+cp -r runtime/* "$1/usr/share/vim/vim82"
+
+rm -rf \
+	"$1/usr/share/icons" \
+	"$1/usr/share/applications" \
+	"$1/usr/share/vim/vim82/gvim*" \
+	"$1/usr/share/vim/vim82/icon*" \
+	"$1/usr/share/vim/vim82/keymap" \
+	"$1/usr/share/vim/vim82/lang" \
+	"$1/usr/share/vim/vim82/tutor" \
+	"$1/usr/share/vim/vim82/vimlogo*" \
+	"$1/usr/share/vim/vim82/vim48*" \
+	"$1/usr/share/vim/vim82/vim32*" \
+	"$1/usr/share/vim/vim82/vim16*"

@@ -1,0 +1,17 @@
+#!/bin/sh -e
+
+# LTO is broken.
+export CFLAGS="${BASE_FLAGS}"
+
+./configure \
+    --prefix=/usr \
+    --syslibdir=/usr/lib
+
+gmake
+gmake install
+
+mkdir -p "$1/usr/bin"
+ln -s /usr/lib/ld-musl-x86_64.so.1 "$1/usr/bin/ldd"
+
+# Fix incorrect symlink to libc.so.
+ln -sf libc.so "$1/usr/lib/ld-musl-x86_64.so.1"

@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Clean unused / unneeded files.
+
+PKG="$2"
+DEST="$3"
+
+: "${DEST:?DEST is unset}"
+
+# Remove files and direcotires that I deem unnecessary.
+rm -rf \
+	"$DEST/usr/share/gettext" \
+	"$DEST/usr/share/polkit-1" \
+	"$DEST/usr/share/locale" \
+	"$DEST/usr/share/info" \
+	"$DEST/usr/lib/charset.alias" \
+	"$DEST/usr/share/zsh" \
+	"$DEST/etc/bash_completion.d" \
+	"$DEST/usr/share/bash-completion" \
+	"$DEST/usr/share/fish" \
+	"$DEST/usr/share/icons/hicolor" \
+	"$DEST/usr/share/aclocal"

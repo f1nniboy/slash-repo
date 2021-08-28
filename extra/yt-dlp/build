@@ -1,0 +1,13 @@
+#!/bin/sh -e
+
+python setup.py build
+python setup.py install \
+	--prefix=/usr \
+	--root="$1" \
+	--optimize=1 \
+	--skip-build
+
+# Add a symlink for youtube-dl compatibility.
+ln -s yt-dlp "$1/usr/bin/youtube-dl"
+
+rm -rf "$1/usr/etc"

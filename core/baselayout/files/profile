@@ -1,0 +1,15 @@
+# System wide environment
+
+# Set the default path.
+# /usr/sbin:/sbin:/bin are included for systems that haven't merged them yet.
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+
+# Set the default umask.
+umask 022
+
+# Load the profiles.
+for file in /etc/profile.d/*; do
+	[ -r "$file" ] && . "$file"
+done
+
+unset file

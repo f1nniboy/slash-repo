@@ -1,0 +1,26 @@
+#!/bin/sh -e
+
+patch -p1 < mandoc-no-warn.patch
+patch -p1 < fix-tbl-segfault.patch
+
+# Change default pager.
+sed -i 's,"more -s","less",g' main.c
+
+# Use CC rather than broken default.
+sed -i "s/CC=.*/CC=${CC:-cc}/" configure
+chmod +x configure
+
+cat > configure.local <<EOF
+PREFIX=/usr
+MANDIR=/usr/share/man
+LIBDIR=/usr/lib
+SBINDIR=/usr/bin
+CC="${CC:-cc}"
+CFLAGS="$CFLAGS -fcommon"
+LN="ln -sf"
+EOF
+
+./configure
+
+make
+make -B -j1 base-install

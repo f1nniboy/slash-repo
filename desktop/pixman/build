@@ -1,0 +1,12 @@
+#!/bin/sh -e
+
+# LTO is broken.
+export CFLAGS="${BASE_FLAGS}"
+export LDFLAGS="${BASE_LDFLAGS}"
+
+./configure \
+	--prefix=/usr \
+	--disable-gtk
+
+make
+make install

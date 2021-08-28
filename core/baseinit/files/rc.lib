@@ -1,0 +1,76 @@
+#!/bin/sh
+# shellcheck disable=1090,1091
+# vim: set ft=sh:
+#
+# This file is not executable as it is sourced by
+# the rc.boot and rc.shutdown scripts.
+
+log() {
+	printf '\033[31;1m=>\033[m %s\n' "$@"
+
+	# Additionally send all messages to /dev/kmsg so that they
+	# appear in 'dmesg' and can be read post-boot.
+	printf 'init: %s\n' "$@" 2>/dev/null > /dev/kmsg
+}
+
+# Check if a directory is mounted.
+mounted() {
+	# This is a pure shell mountpoint implementation. We're dealing
+	# with basic (and fixed/known) input so this doesn't need to
+	# handle more complex cases.
+	[ -e "$1" ]         || return 1
+	[ -e /proc/mounts ] || return 1
+
+	while read -r _ target _; do
+		[ "$target" = "$1" ] && return 0
+	done < /proc/mounts
+
+	return 1
+}
+
+mnt() {
+	# If the filesystem is already mounted, mount it again with
+	# 'remount' so that it uses the correct mount options. This is
+	# usually the case when dealing with an initramfs for example.
+	mounted "$4" && set -- "remount,$1" "$2" "$3" "$4"
+
+	mount -o "$1" -t "$2" "$3" "$4"
+}
+
+# Start an emergency shell.
+sos() {
+	log "An error occured, starting emergency shell."
+	/bin/sh
+}
+
+# Run a hook.
+# $1 = type
+run_hook() {
+	for file in /usr/lib/init/rc.d/*."$1" /etc/rc.d/*."$1"; do
+		[ -f "${file}" ] || continue
+
+		log "Running $1 hook: ${file}"
+		. "${file}"
+	done
+}
+
+# Generate a random seed.
+# $1 = action
+random_seed() {
+	seed=/var/lib/init/random-seed
+
+	case $1 in
+	    save)
+	        mkdir -p "${seed%/*}" || {
+	            log "Warning: Failed to create random seed directory."
+	            return 1
+	        }
+
+	        dd count=1 bs=512 if=/dev/urandom of="${seed}" >/dev/null 2>&1
+	    ;;
+
+	    load)
+	        [ -f "${seed}" ] && cat "${seed}" > /dev/urandom
+	    ;;
+	esac
+}

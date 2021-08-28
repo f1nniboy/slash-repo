@@ -1,0 +1,8 @@
+#!/bin/sh -e
+
+./configure \
+	--prefix=/usr
+
+# We need to set DESTDIR here.
+gmake DESTDIR="$1" psf psf-vgaw
+gmake DESTDIR="$1" install-psf install-psf-vgaw install-psf-ref

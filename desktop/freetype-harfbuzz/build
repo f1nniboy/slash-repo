@@ -1,0 +1,55 @@
+#!/bin/sh -e
+
+# $1 = whether Harfbuzz support should be enabled
+build_freetype() (
+	export CFLAGS="${CFLAGS} -DDEFAULT_TT_INTERPRETER_VERSION=TT_INTERPRETER_VERSION_40"
+
+	cd freetype
+
+	meson \
+		--prefix=/usr \
+		-Dharfbuzz="$1" \
+		. output
+
+	ninja -C output
+	ninja -C output install
+)
+
+build_harfbuzz() (
+	# Point Harfbuzz to the Freetype files.
+	export CFLAGS="$CFLAGS -I$1/usr/include/freetype2"
+	export CXXFLAGS="$CXXFLAGS -I$1/usr/include/freetype2"
+	export LDFLAGS="$LDFLAGS -L$1/usr/lib"
+
+	cd harfbuzz
+
+	meson \
+		--prefix=/usr \
+		-Dpkg_config_path="$1/usr/lib/pkgconfig" \
+		-Ddefault_library=both \
+		-Dglib=enabled \
+		-Dfreetype=enabled \
+		-Dcairo=disabled \
+		-Dicu=disabled \
+		-Dbenchmark=disabled \
+		-Dtests=disabled \
+		. output
+
+	ninja -C output
+	ninja -C output install
+)
+
+# Build Freetype twice to avoid the recursive dependency problem.
+
+build_freetype "disabled"
+build_harfbuzz "$1"
+
+# Point Freetype to the Harfbuzz files.
+export LIBRARY_PATH="$1/usr/lib:$LIBRARY_PATH"
+export PKG_CONFIG_PATH="$1/usr/lib/pkgconfig:$PKG_CONFIG_PATH"
+export CFLAGS="$CFLAGS -I$PWD/harfbuzz/src"
+
+# Generate fresh ninja build file.
+rm -rf freetype/output
+
+build_freetype "enabled"

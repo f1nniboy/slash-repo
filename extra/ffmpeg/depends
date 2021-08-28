@@ -1,0 +1,15 @@
+alsa-lib
+gmake         make
+lame
+libdrm
+libogg
+libressl
+libvorbis
+libvpx
+libwebp
+linux-headers make
+nasm          make
+opus
+x264
+x265
+xvidcore

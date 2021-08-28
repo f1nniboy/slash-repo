@@ -1,0 +1,29 @@
+#!/bin/sh -e
+
+# Clang doesn't understand "-Wtrampolines" and "-Wimplicit-fallthrough=5".
+sed -i -e 's/-Wtrampolines//g' -e 's/=5//g' lib/Makefile.in
+sed -i -e 's/-Wtrampolines//g' -e 's/=5//g' libelf/Makefile.in
+
+# Build sometimes forces -Werror.
+export CFLAGS="$CFLAGS -Wno-error"
+
+# Disable configure error for missing argp, fts, and obstack
+sed -i 's/as_fn_error.*\(argp\|fts\|obstack\)/: "/g' configure
+
+# Don't compile two unrelated C files which require argp.
+sed -i 's/color.*printversion../#/g' lib/Makefile.in
+
+sh ./configure \
+	--prefix=/usr \
+	--disable-symbol-versioning \
+	--disable-debuginfod \
+	--disable-nls \
+	ac_cv_c99=yes
+
+# Skip the default make target and only build what we need.
+gmake -C lib
+gmake -C libelf
+gmake -C libelf install
+
+mkdir -p "$1/usr/lib/pkgconfig"
+cp -f config/libelf.pc "$1/usr/lib/pkgconfig/libelf.pc"

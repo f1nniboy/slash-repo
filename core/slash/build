@@ -1,0 +1,8 @@
+#!/bin/sh -e
+
+mkdir -p "$1/usr/bin"
+
+# Install the tools.
+cp tools/* "$1/usr/bin"
+
+install -m755 slash "$1/usr/bin/slash"

@@ -1,0 +1,93 @@
+#!/bin/sh -e
+
+export DESTDIR="$1"
+
+patch -p1 < no-fribidi.patch
+
+# Remove the "atk-bridge" dependency which removes the "dbus" dependency.
+sed -i '/atkbridge_dep/d;/atk-bridge-2.0/d' meson.build
+sed -i '/atkbridge_dep,/d' gtk/meson.build
+
+sed -i '/<atk-bridge.h>/d;/atk_bridge_adaptor_init/d' gtk/a11y/gtkaccessibility.c
+
+# Remove the "fribidi" dependency.
+sed -i '/fribidi_dep/d;/fribidi_req  /d;s/fribidi_req//;s/fribidi//' meson.build
+sed -i '/fribidi_dep,/d' gtk/meson.build
+sed -i '/fribidi_dep,/d' gdk/meson.build
+
+# Build libepoxy for gtk+3's sole use. This is the only package that
+# requires the library. While the build system supports building this as
+# a subproject, it is broken so we must do it ourselves.
+(
+	cd libepoxy
+
+	meson \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		-Ddefault_library=static \
+		-Dhas-dlvsym=false \
+		-Degl=yes \
+		-Dtests=false \
+		-Dglx=no \
+		-Dx11=false \
+		. output
+
+	ninja -C output
+	DESTDIR="${PWD}" ninja -C output install
+)
+
+
+# Point to the vendored libepoxy.
+export PKG_CONFIG_PATH="${PWD}/libepoxy/usr/lib/pkgconfig"
+export CFLAGS="${CFLAGS} -L${PWD}/libepoxy/usr/lib"
+export CFLAGS="${CFLAGS} -I${PWD}/libepoxy/usr/include"
+
+meson \
+	--prefix=/usr \
+	--sysconfdir=/etc \
+	--localstatedir=/var \
+	-Dx11_backend=false \
+	-Dprint_backends=auto \
+	-Dwayland_backend=true \
+	-Dwin32_backend=false \
+	-Dquartz_backend=false \
+	-Dcolord=no \
+	-Ddemos=false \
+	-Dexamples=false \
+	-Dtests=false \
+	-Dinstalled_tests=false \
+	-Dgtk_doc=false \
+	-Dintrospection=false \
+	. build
+
+ninja -C build
+ninja -C build install
+
+
+# GTK+3 on Wayland requires gsettings-desktop-schemes
+# for gsettings to work correctly. Under X11 it made
+# use of xsettings but this is no longer the case.
+(
+	cd schemas
+
+	meson \
+		--prefix=/usr \
+		-Dintrospection=false \
+		. build
+
+	ninja -C build
+	ninja -C build install
+)
+
+# We don't compile with librsvg which leads to this
+# utility solely causing compiler errors for some
+# packages. It has no use at all.
+rm -f  "$1/usr/bin/gtk-encode-symbolic-svg"
+rm -rf "$1/usr/share/gettext"
+
+# Remove epoxy references from installed pkg-config files. The build
+# system should have done this for us as it is statically linked.
+for file in "$1/usr/lib/pkgconfig/"*.pc; do
+	sed -i 's/epoxy >= 1.4//' "${file}"
+done

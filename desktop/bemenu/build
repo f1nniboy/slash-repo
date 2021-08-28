@@ -1,0 +1,4 @@
+#!/bin/sh -e
+
+gmake PREFIX=/usr clients wayland
+gmake PREFIX=/usr install

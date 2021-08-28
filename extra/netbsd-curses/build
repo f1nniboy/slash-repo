@@ -1,0 +1,8 @@
+#!/bin/sh
+
+gmake
+gmake PREFIX=/usr install
+
+for lib in curses terminfo panel menu form; do
+	chmod 755 "$1/usr/lib/lib${lib}.so"
+done

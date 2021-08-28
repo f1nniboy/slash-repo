@@ -1,0 +1,13 @@
+#!/bin/sh -e
+
+export LDFLAGS="${LDFLAGS} -unwindlib=libunwind -lc++abi"
+
+sed -i 's/gcc/cc/' src/Makefile
+
+gmake amalg   PREFIX=/usr
+gmake install PREFIX=/usr
+
+# Create these symlinks ourselves as luajit relies
+# on ldconfig to do so and musl does not provide it.
+ln -s libluajit-5.1.so.2.0.5 "$1/usr/lib/libluajit-5.1.so"
+ln -s libluajit-5.1.so.2.0.5 "$1/usr/lib/libluajit-5.1.so.2"

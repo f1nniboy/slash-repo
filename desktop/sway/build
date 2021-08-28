@@ -1,0 +1,29 @@
+#!/bin/sh -e
+
+patch -p1 < no-evdev.patch
+
+# Change the default background color.
+sed -i 's/0.25f, 0.25f, 0.25f/0.155, 0.155, 0.155/' \
+    sway/desktop/render.c > _
+
+# Change the default border width.
+sed -i 's/BORDER_WIDTH = 1/BORDER_WIDTH = 2/' swaybar/render.c > _
+
+meson \
+	--prefix=/usr \
+	-Dexamples=false \
+	-Dxwayland=disabled \
+	-Dx11-backend=disabled \
+	-Dxcb-errors=disabled \
+	-Dxcb-icccm=disabled \
+	. build
+
+ninja -C build
+ninja -C build install
+
+rm -rf \
+	"$1/usr/share/fish" \
+	"$1/usr/share/bash-completion" \
+	"$1/usr/share/backgrounds" \
+	"$1/usr/share/zsh" \
+	"$1/etc/sway"

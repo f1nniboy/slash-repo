@@ -1,0 +1,18 @@
+#!/bin/sh -e
+
+sed 's/fcobjshash\.h/fcjunk.h/' src/Makefile.in > _
+mv -f _ src/Makefile.in
+
+# Make the build system run /bin/true to generate
+# a dummy file so our pre-generated one is used.
+./configure \
+	GPERF=/bin/true \
+	--prefix=/usr \
+	--localstatedir=/var \
+	--sysconfdir=/etc \
+	--with-xmldir=/etc/fonts \
+	--disable-docs \
+	--disable-nls
+
+gmake
+gmake install

@@ -1,0 +1,17 @@
+#!/bin/sh -e
+
+mkdir -p \
+	"$1/usr/bin" \
+	"$1/usr/lib/init" \
+	"$1/usr/share/doc/init" \
+	"$1/etc"
+
+cp -R rc.* "$1/usr/lib/init"
+cp rc.conf "$1/etc/rc.conf"
+
+# Disable as CFLAGS must work this way.
+# shellcheck disable=2086
+for cmd in kpow kall; do
+	"${CC}" -o "$1/usr/bin/${cmd}" "${cmd}.c" ${CFLAGS}
+	cp -f "${cmd}.c" "$1/usr/share/doc/init/${cmd}.c"
+done

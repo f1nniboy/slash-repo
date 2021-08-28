@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Delete static libraries.
+
+PKG="$2"
+DEST="$3"
+
+: "${DEST:?DEST is unset}"
+
+# Remove static libraries.
+#
+# Do not remove static libraries for musl as they are
+# always needed for linking.
+[ "$PKG" = "musl" ] || rm -f "$DEST/usr/lib"/*.a

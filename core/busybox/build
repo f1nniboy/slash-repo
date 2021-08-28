@@ -1,0 +1,52 @@
+#!/bin/sh -e
+
+for patch in *.patch; do
+	patch -p1 < "${patch}"
+done
+
+# Remove forced gcc/g++ usage.
+sed -i -e "s#= g[c+][c+]#= ${CC}#g" Makefile
+sed -i -e "s#\(\$(CROSS_COMPILE)\)gcc#\1${CC}#g" Makefile
+
+# Ensure that busybox's build system is aware that 'cc' points to
+# to clang rather than GCC.
+sed -i "s&\(\$(CC),\)clang&\1${CC}&g" Makefile.flags
+
+# Build and install regular busybox.
+gmake HOSTCC="${CC}"
+gmake CONFIG_PREFIX="$1/usr" install
+
+# Rename the built binary temporarily.
+mv "$1/usr/bin/busybox" "$1/usr/bin/busybox-nosuid"
+
+# Build and install SUID busybox.
+cp -f .config-suid .config
+
+gmake HOSTCC="${CC}"
+gmake CONFIG_PREFIX="$1/usr" install
+
+# Rename the binaries.
+mv -f "$1/usr/bin/busybox"        "$1/usr/bin/busybox-suid"
+mv -f "$1/usr/bin/busybox-nosuid" "$1/usr/bin/busybox"
+
+# Install the regular symlinks.
+"$1/usr/bin/busybox" --list | while read -r name; do
+    ln -s busybox "$1/usr/bin/${name}"
+done
+
+# Install the suid symlinks.
+"$1/usr/bin/busybox-suid" --list | while read -r name; do
+	ln -s busybox-suid "$1/usr/bin/${name}"
+done
+
+# Set the SUID bit on the SUID busybox.
+chmod u+s "$1/usr/bin/busybox-suid"
+
+# Install services.
+for service in mdev ntpd; do
+	mkdir -p "$1/etc/sv/${service}"
+	cp -f "${service}.run" "$1/etc/sv/${service}/run"
+	ln -sf "/run/runit/supervise.${service}" "$1/etc/sv/${service}/supervise"
+done
+
+cp -f mdev.conf "$1/etc/mdev.conf"

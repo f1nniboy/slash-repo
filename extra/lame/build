@@ -1,0 +1,17 @@
+#!/bin/sh -e
+
+# LTO is broken.
+export CFLAGS="${BASE_FLAGS}"
+
+# Disable HTML documentation.
+sed -i 's/html man/man/' doc/Makefile.in
+
+./configure \
+	ac_cv_lib_ncurses_initscr=no \
+	ac_cv_lib_curses_initscr=no \
+	--prefix=/usr \
+	--enable-shared \
+	--disable-gtktest
+
+make
+make install
