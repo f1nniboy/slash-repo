@@ -11,4 +11,4 @@ DEST="$3"
 #
 # Do not remove static libraries for musl as they are
 # always needed for linking.
-[ "$PKG" = "musl" ] || rm -f "$DEST/usr/lib"/*.a
+[ "${PKG}" = "musl" ] || [ "${PKG}" = "llvm" ] || rm -f "${DEST}/usr/lib"/*.a
