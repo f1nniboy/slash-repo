@@ -27,7 +27,7 @@ Your build flags should look like this:
 
 ```sh
 # Add "-falign-functions=32" if you have an Intel CPU.
-export COMMON_FLAGS="-march=native -O3 -pipe"
+export COMMON_FLAGS="-march=native -O3 -pipe -flto=thin"
 export CFLAGS="${COMMON_FLAGS}"
 export CXXFLAGS="${COMMON_FLAGS}"
 
