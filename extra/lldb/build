@@ -1,0 +1,9 @@
+#!/bin/sh -e
+
+unset CMAKE_GENERATOR
+
+cmake -B build \
+	-DCMAKE_INSTALL_PREFIX=/usr
+
+cmake --build   build
+cmake --install build
