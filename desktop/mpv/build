@@ -1,0 +1,21 @@
+#!/bin/sh -e
+
+ln -s waf-2.0.18 waf
+
+mv -f osc.lua player/lua
+
+python waf configure \
+	--prefix=/usr \
+	--mandir=/usr/share/man \
+	--confdir=/etc/mpv \
+	--enable-alsa \
+	--enable-wayland \
+	--disable-x11 \
+	--lua="luajit"
+
+python waf build
+python waf install --destdir="$1"
+
+rm -rf \
+	"$1/usr/share/zsh" \
+	"$1/usr/share/bash-completion"

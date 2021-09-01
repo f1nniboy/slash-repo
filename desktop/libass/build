@@ -1,0 +1,16 @@
+#!/bin/sh -e
+
+patch -p1 < no-fribidi.patch
+
+# Remove fribidi configure checks.
+sed -i -e 's/as_fn_error.*fribidi/: 0 "/' \
+	-e '/pkg_requires="fribidi >= .*/d' \
+	configure
+
+sh ./configure \
+	FRIBIDI_LIBS="  " \
+	--prefix=/usr \
+	--enable-fontconfig
+
+make
+make install

@@ -1,0 +1,15 @@
+alsa-lib
+ffmpeg
+freetype-harfbuzz
+libass
+libdrm
+libjpeg-turbo
+libxkbcommon
+linux-headers make
+luajit
+mesa
+pkgconf make
+python  make
+wayland
+wayland-protocols make
+zlib
