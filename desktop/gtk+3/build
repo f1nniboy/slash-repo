@@ -1,19 +1,17 @@
 #!/bin/sh -e
 
-export DESTDIR="$1"
+for patch in *.patch; do
+	patch -p1 < "${patch}"
+done
 
-patch -p1 < no-fribidi.patch
+# Remove the configure check for atk-bridge and fribidi. Funny enough, atk-bridge
+# is not required under Wayland and there are ifdefs in place to ensure this.
+# The build system forces the dependency though so we must remove it.
+sed -i -e 's/\(ATK_PACKAGES="atk\) atk-bridge-2.0"/\1"/' \
+    -e 's/fribidi >= 0\.19\.7//g' configure
 
-# Remove the "atk-bridge" dependency which removes the "dbus" dependency.
-sed -i '/atkbridge_dep/d;/atk-bridge-2.0/d' meson.build
-sed -i '/atkbridge_dep,/d' gtk/meson.build
-
-sed -i '/<atk-bridge.h>/d;/atk_bridge_adaptor_init/d' gtk/a11y/gtkaccessibility.c
-
-# Remove the "fribidi" dependency.
-sed -i '/fribidi_dep/d;/fribidi_req  /d;s/fribidi_req//;s/fribidi//' meson.build
-sed -i '/fribidi_dep,/d' gtk/meson.build
-sed -i '/fribidi_dep,/d' gdk/meson.build
+# Don't build GTK examples/demos/testsuite.
+sed -i 's/demos tests testsuite examples//;s/docs \(m4macros\)/\1/' Makefile.in
 
 # Build libepoxy for gtk+3's sole use. This is the only package that
 # requires the library. While the build system supports building this as
@@ -43,26 +41,29 @@ export PKG_CONFIG_PATH="${PWD}/libepoxy/usr/lib/pkgconfig"
 export CFLAGS="${CFLAGS} -L${PWD}/libepoxy/usr/lib"
 export CFLAGS="${CFLAGS} -I${PWD}/libepoxy/usr/include"
 
-meson \
+
+# While gtk+3 supports meson, the meson build is strictly speaking broken.
+# It forces X11 in various places and the usage of -Werror causes various build
+# failures (which according to upstream should not occur on x86_64).
+MAKE=gmake ./configure \
 	--prefix=/usr \
 	--sysconfdir=/etc \
 	--localstatedir=/var \
-	-Dx11_backend=false \
-	-Dprint_backends=auto \
-	-Dwayland_backend=true \
-	-Dwin32_backend=false \
-	-Dquartz_backend=false \
-	-Dcolord=no \
-	-Ddemos=false \
-	-Dexamples=false \
-	-Dtests=false \
-	-Dinstalled_tests=false \
-	-Dgtk_doc=false \
-	-Dintrospection=false \
-	. build
+	--enable-wayland-backend \
+	--disable-x11-backend \
+	--disable-schemas-compile \
+	--disable-cups \
+	--disable-papi \
+	--disable-cloudprint \
+	--disable-glibtest \
+	--disable-nls \
+	--disable-installed-tests \
+	--enable-introspection=no \
+	--enable-colord=no \
+	--enable-gtk-doc-html=no
 
-ninja -C build
-ninja -C build install
+gmake
+gmake install
 
 
 # GTK+3 on Wayland requires gsettings-desktop-schemes

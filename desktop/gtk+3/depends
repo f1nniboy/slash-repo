@@ -4,6 +4,7 @@ fontconfig
 freetype-harfbuzz
 gdk-pixbuf
 glib
+gmake   make
 libxkbcommon
 meson   make
 pango
