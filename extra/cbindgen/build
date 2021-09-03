@@ -1,49 +1,41 @@
 #!/bin/sh -e
-#
-# Seeing as this is the only rust package in the
-# repositories (other than rust itself), this will
-# also serve as a reference to writing network-free
-# rust-based packages.
 
-# Set the CARGO_HOME variable to the current directory
-# to prevent cargo from touching '$HOME/.cargo'. This
-# keeps the build contained to the package manager's
-# domain.
-export CARGO_HOME=$PWD
+# Seeing as this is the only package that requires Rust, this will also
+# serve as a reference to writing network-free Rust-based packages.
 
-# Extract each crate and generate a checksum file.
-# This effectively mimics 'cargo vendor' without the
-# network requirement.
-#
-# This allows the package manager to cache each crate
-# and handle them as regular sources.
+# Set the CARGO_HOME variable to the current directory to prevent cargo from
+# touching '${HOME}/.cargo'. This keeps the build contained to the package
+# manager's domain.
+export CARGO_HOME="${PWD}"
+
+# Extract each crate and generate a checksum file. This effectively mimics
+# 'cargo vendor' without the network requirement. This allows the package
+# manager to cache each crate and handle them as regular sources.
 (
-    cd vendor
+	cd vendor
 
-    # Download link for this crate 404s. Mirror link saves
-    # the file as 'download' so it must be renamed.
-    mv -f download wasi-0.9.0+wasi-snapshot-preview1.crate
+	# Download link for this crate 404s. Mirror link saves the file as 'download
+	# so it must be renamed.
+	mv -f download wasi-0.9.0+wasi-snapshot-preview1.crate
 
-    for crate in *.crate; do
-        tar xf "$crate"
+	for crate in *.crate; do
+		tar xf "${crate}"
 
-        # Strip the filename from the sha256sum output.
-        sha256=$(sha256sum "$crate")
-        sha256=${sha256%% *}
+		# Strip the filename from the sha256sum output.
+		checksum=$(sha256sum "${crate}")
+		checksum="${checksum%% *}"
 
-        printf '{"package":"%s","files":{}}\n' "$sha256" \
-            > "${crate%.crate}/.cargo-checksum.json"
-    done
+		printf '{"package":"%s","files":{}}\n' "${checksum}" \
+			> "${crate%.crate}/.cargo-checksum.json"
+	done
 )
 
-# Cargo reads a "global" configuration file from $CARGO_HOME,
-# as we've set it to $PWD this is where we'll be storing the
-# vendor config.
+# Cargo reads a "global" configuration file from $CARGO_HOME, as we've set it to
+# $PWD this is where we'll be storing the vendor config.
 mkdir -p .cargo
 
-# Create the configuration file to tell cargo to look in the
-# 'vendor' directory for the already downloaded sources
-# rather than crates.io (over network).
+# Create the configuration file to tell cargo to look in the 'vendor' directory
+# for the already downloaded sources rather than crates.io (over network).
 cat <<EOF > .cargo/config
 [source.crates-io]
 replace-with = "vendored-sources"
@@ -52,9 +44,8 @@ replace-with = "vendored-sources"
 directory = "vendor"
 EOF
 
-# Use the '--frozen' flag to tell cargo to skip the network
-# and use whatever dependencies are in the Cargo.[toml|lock]
-# files.
+# Use the '--frozen' flag to tell cargo to skip the network and use whatever
+# dependencies are in the Cargo.[toml|lock] files.
 cargo build --release --frozen
 
 mkdir -p "$1/usr/bin"
