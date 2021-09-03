@@ -1,5 +1,8 @@
 #!/bin/sh -e
 
+# Intended behaviour.
+# shellcheck disable=2030,2031
+
 # $1 = whether Harfbuzz support should be enabled
 build_freetype() (
 	export CFLAGS="${CFLAGS} -DDEFAULT_TT_INTERPRETER_VERSION=TT_INTERPRETER_VERSION_40"
