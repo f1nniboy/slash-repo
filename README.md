@@ -1,5 +1,5 @@
-# Slash Repository
-> Repository for Slash Linux.
+# Slash Linux - Repository
+> An experimental Linux distribution, based on KISS, focused on performance and minimalism.
 
 ## Note
 This repository is **not** compatible with the KISS package manager. You will need to
@@ -31,7 +31,7 @@ export COMMON_FLAGS="-march=native -O3 -pipe -flto=thin"
 export CFLAGS="${COMMON_FLAGS}"
 export CXXFLAGS="${COMMON_FLAGS}"
 
-export LDFLAGS=""-Wl,-O3 -Wl,--as-needed ${COMMON_FLAGS}"
+export LDFLAGS="-Wl,-O3 -Wl,--as-needed ${COMMON_FLAGS}"
 ```
 
 `BASE_FLAGS` and `BASE_LDFLAGS` are set by the package manager as a fallback for
