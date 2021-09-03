@@ -1,7 +1,22 @@
 #!/bin/sh -e
 
-make PREFIX=/usr
-make PREFIX=/usr install
+# Use 'samurai' if it is available.
+if slash l samurai; then
+	mkdir -p "$1/usr/share/man/man1"
+
+	cat - ninja.in <<EOF> build.ninja
+destdir = $1
+cc = ${CC}
+cflags = -std=c99 -Wall -Wextra -Wpedantic -Wno-unused-parameter ${CFLAGS}
+ldflags = ${LDFLAGS}
+EOF
+
+    ninja
+    ninja install
+else
+	make PREFIX=/usr 
+	make PREFIX=/usr install
+fi
 
 ln -sf samu   "$1/usr/bin/ninja"
 ln -sf samu.1 "$1/usr/share/man/man1/ninja.1"
