@@ -5,11 +5,11 @@ libass
 libdrm
 libjpeg-turbo
 libxkbcommon
-linux-headers make
+linux-headers     make
 luajit
 mesa
-pkgconf make
-python  make
+pkgconf           make
+python            make
 wayland
 wayland-protocols make
 zlib
