@@ -4,12 +4,14 @@
 if slash l samurai; then
 	mkdir -p "$1/usr/share/man/man1"
 
-	cat - ninja.in <<EOF> build.ninja
+	cat > build.ninja <<EOF
 destdir = $1
 cc = ${CC}
 cflags = -std=c99 -Wall -Wextra -Wpedantic -Wno-unused-parameter ${CFLAGS}
 ldflags = ${LDFLAGS}
 EOF
+
+	cat ninja.in >> build.ninja
 
     ninja
     ninja install
