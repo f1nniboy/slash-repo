@@ -13,8 +13,8 @@ EOF
 
 	cat ninja.in >> build.ninja
 
-    ninja
-    ninja install
+	ninja
+	ninja install
 else
 	make PREFIX=/usr 
 	make PREFIX=/usr install

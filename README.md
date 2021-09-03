@@ -58,7 +58,7 @@ have created hooks that will do this. To use them:
 
 ```sh
 export SLASH_HOOK=PATH/TO/REPO/hooks/clean-files
-export SLASH_HOOK=PATH/TO/REPO/hooks/remove-static-libraries
+export SLASH_HOOK=$SLASH_HOOK:PATH/TO/REPO/hooks/remove-static-libraries
 ```
 
 ## Troubleshooting
