@@ -1,10 +1,30 @@
 --- a/pfetch
 +++ b/pfetch
 @@ -475,6 +475,7 @@
-
+ 
                  # Directories containing packages.
                  has kiss       && printf '%s\n' /var/db/kiss/installed/*/
 +                has slash      && printf '%s\n' /var/db/slash/installed/*/
                  has brew       && printf '%s\n' "$(brew --cellar)/"*
                  has emerge     && printf '%s\n' /var/db/pkg/*/*/
                  has pkgtool    && printf '%s\n' /var/log/packages/*
+@@ -1401,6 +1402,19 @@
+ 				${c2}| | \___/ | |
+ 				${c2}| \\______ \\_|
+ 				${c2} -_______\\
++			EOF
++        ;;
++
++        [Ss]lash*)
++            read_ascii 4 <<-EOF
++				${c4}         ${c2}_
++				${c4}   _____${c2}/_/
++				${c4}  /  ______|
++				${c4}  | |_${c2}/${c4}_${c2}/${c4}__
++				${c4}  \\______  \\
++				${c4}   _${c2}/${c4}_${c2}/${c4}__| |
++				${c4}  |________/
++				${c4}  ${c2}/_/      
+ 			EOF
+         ;;
+ 

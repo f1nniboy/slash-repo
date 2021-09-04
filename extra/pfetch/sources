@@ -1,2 +1,2 @@
 https://github.com/dylanaraps/pfetch/archive/VERSION.tar.gz
-patches/add-package-manager.patch
+patches/add-distro-support.patch
