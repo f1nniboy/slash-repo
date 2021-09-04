@@ -25,8 +25,6 @@ and filesystems set up and have an internet connection.
   * [Filesystem utilities](#filesystem-utilities)
   * [DHCP](#dhcp)
 - [Hostname configuration](#hostname-configuration)
-  * [/etc/hosts](#-etc-hosts)
-  * [/etc/hostname](-etc-hostname)
 - [The kernel](#the-kernel)
   * [Install required packages](#install-required-packages)
   * [Download the kernel sources](#download-the-kernel-sources)
