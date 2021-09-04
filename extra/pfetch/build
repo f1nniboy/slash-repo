@@ -1,3 +1,6 @@
 #!/bin/sh -e
 
+# Add support for the Slash package manager.
+patch -p1 < add-package-manager.patch
+
 install -Dm 755 pfetch "$1/usr/bin/pfetch"

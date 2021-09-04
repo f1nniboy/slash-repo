@@ -1,0 +1,10 @@
+--- a/pfetch
++++ b/pfetch
+@@ -475,6 +475,7 @@
+
+                 # Directories containing packages.
+                 has kiss       && printf '%s\n' /var/db/kiss/installed/*/
++                has slash      && printf '%s\n' /var/db/slash/installed/*/
+                 has brew       && printf '%s\n' "$(brew --cellar)/"*
+                 has emerge     && printf '%s\n' /var/db/pkg/*/*/
+                 has pkgtool    && printf '%s\n' /var/log/packages/*
