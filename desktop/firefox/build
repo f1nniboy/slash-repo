@@ -5,20 +5,10 @@ export CFLAGS="${BASE_FLAGS}"
 export CXXFLAGS="${BASE_FLAGS}"
 unset LDFLAGS
 
-# Apply the no X11 patch.
-patch -p1 < no-x11.patch
-
-# Clang (since 10.0) is able to build NSS with integrated assembler.
-for file in \
-    security/nss/lib/freebl/Makefile \
-    security/nss/lib/freebl/freebl.gyp \
-    security/nss/lib/freebl/freebl_base.gypi
-do
-    sed -i '/-no-integrated-as/d' "${file}"
+# Apply the patches.
+for patch in *.patch; do
+	patch -p1 < "${patch}"
 done
-
-# Remove fribidi dependency.
-sed -i '/fribidi/d' config/system-headers.mozbuild
 
 # Autoconf 2.13 requires GNU m4.
 (
@@ -47,8 +37,7 @@ export PATH="${PWD}/junk/bin:${PATH}"
 )
 
 # Build yasm for Firefox's sole use.
-# Firefox is the only package which needs it
-# and upstream is kinda dead.
+# Firefox is the only package which needs it and upstream seems dead.
 (
 	cd yasm
 
@@ -59,11 +48,9 @@ export PATH="${PWD}/junk/bin:${PATH}"
 	make DESTDIR="${PWD}/../junk" install
 )
 
-# Build zip for Firefox's sole use.
-# Zip is an awful format that we should use
-# as little as possible.
-(
-	cd zip
+# Build zip and unzip for Firefox's sole use.
+for dir in zip unzip; do (
+	cd "${dir}"
 
 	make -B \
 		CC="${CC} ${CFLAGS} ${CXXFLAGS}" \
@@ -72,7 +59,7 @@ export PATH="${PWD}/junk/bin:${PATH}"
 	make -B \
 		prefix="${PWD}/../junk" \
 		-f unix/Makefile install
-)
+) done
 
 # Bypass 'ccache' as it's totally useless when building
 # Firefox and only slows things down.
@@ -124,7 +111,6 @@ ac_add_options --disable-debug
 ac_add_options --disable-debug-symbols
 ac_add_options --disable-parental-controls
 ac_add_options --disable-system-extension-dirs
-ac_add_options --disable-webrtc
 EOF
 
 ./mach build
