@@ -25,11 +25,15 @@ log "Mounting pseudo filesystems..."; {
 		ln -s fd/0			/dev/stdin
 		ln -s fd/1			/dev/stdout
 		ln -s fd/2			/dev/stderr
-	} 2>/dev/null
+	} 2> /dev/null
 }
 
 log "Loading rc.conf settings..."; {
 	[ -f /etc/rc.conf ] && . /etc/rc.conf
+}
+
+log "Running pre-boot hooks..."; {
+	run_hook pre.boot
 }
 
 log "Starting device manager..."; {
@@ -37,8 +41,28 @@ log "Starting device manager..."; {
 	mdev -df & mdev_pid=$!
 }
 
+log "Remounting rootfs as read-only..."; {
+	mount -o remount,ro / || sos
+}
+
+log "Checking filesystems..."; {
+	fsck -ATat noopts=_netdev
+
+	# It can't be assumed that success is 0
+	# and failure is > 0.
+	[ $? -gt 1 ] && sos
+}
+
+log "Mounting rootfs as read-write..."; {
+	mount -o remount,rw / || sos
+}
+
 log "Mounting all local filesystems..."; {
 	mount -a || sos
+}
+
+log "Enabling swap..."; {
+	swapon -a || sos
 }
 
 log "Seeding random..."; {
@@ -48,6 +72,11 @@ log "Seeding random..."; {
 log "Setting up loopback..."; {
 	ip link set up dev lo
 }
+
+log "Setting hostname..."; {
+	read -r hostname < /etc/hostname
+	printf %s "${hostname:-slash}" > /proc/sys/kernel/hostname
+} 2> /dev/null
 
 log "Loading sysctl settings..."; {
 	# This is a portable equivalent to 'sysctl --system'
@@ -80,8 +109,8 @@ log "Killing device manager to make way for service..."; {
 	fi 2>/dev/null
 }
 
-log "Running boot hooks..."; {
-	run_hook boot
+log "Running post-boot hooks..."; {
+	run_hook post.boot
 }
 
 # Calculate how long the boot process took to
