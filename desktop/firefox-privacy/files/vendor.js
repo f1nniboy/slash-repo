@@ -420,19 +420,12 @@ pref("plugins.click_to_play", true);
 // Camera / Microphone
 //
 
-pref("media.peerconnection.enabled", false);
-pref("media.peerconnection.ice.default_address_only", true);
-pref("media.peerconnection.ice.no_host", true);
 pref("webgl.disabled", true);
 pref("webgl.dxgl.enabled", false);
 pref("webgl.enable-webgl2", false);
 pref("webgl.min_capability_mode", true);
 pref("webgl.disable-extensions", true);
 pref("webgl.disable-fail-if-major-performance-caveat", true);
-pref("media.getusermedia.screensharing.enabled", false);
-pref("media.getusermedia.browser.enabled", false);
-pref("media.getusermedia.audiocapture.enabled", false);
-pref("media.autoplay.enabled.user-gestures-needed", false);
 pref("media.block-autoplay-until-in-foreground", true);
 
 //
@@ -482,8 +475,6 @@ pref("dom.targetBlankNoOpener.enabled", true);
 
 pref("dom.battery.enabled", false);
 pref("dom.vr.enabled", false);
-pref("media.navigator.enabled", false);
-pref("dom.webaudio.enabled", false);
 
 //
 // Other
