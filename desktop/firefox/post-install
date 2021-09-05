@@ -2,7 +2,7 @@
 
 cat <<EOF
 
-NOTE: Install the 'hicolor-icon-theme' package
+NOTE: Install the 'adwaita-icon-theme' package
       if no other icon themes are installed.
       
 NOTE: Install the 'firefox-privacy' package to
@@ -15,12 +15,12 @@ NOTE: You must set this environment variable.
 
 NOTE: For VAAPI to work with amdgpu you must have 
       CHECKPOINT_RESTORE enabled in your kernel.
-      See: https://lwn.net/Articles/845448/
+      See: https://lwn.net/Articles/845448
 
       CONFIG_CHECKPOINT_RESTORE=y
 
 NOTE: For VAAPI to work you must enable the following 
-      in about:config
+      in 'about:config':
 
       gfx.webrender.all=true
       media.av1.enabled=false
