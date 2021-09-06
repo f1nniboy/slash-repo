@@ -9,7 +9,7 @@ mkdir -p \
 cp -R rc.* "$1/usr/lib/init"
 cp rc.conf "$1/etc/rc.conf"
 
-# Disable as CFLAGS must work this way.
+# Disable as CFLAGS work this way.
 # shellcheck disable=2086
 for cmd in kpow kall; do
 	"${CC}" -o "$1/usr/bin/${cmd}" "${cmd}.c" ${CFLAGS}
