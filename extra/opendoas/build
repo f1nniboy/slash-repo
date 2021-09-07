@@ -1,11 +1,9 @@
 #!/bin/sh -e
 
-sed '/chown/d' GNUmakefile > _
-mv -f _ GNUmakefile
+sed -i '/chown/d' GNUmakefile
 
 ./configure \
 	--prefix=/usr \
-	--enable-static \
 	--with-shadow \
 	--with-timestamp \
 	--without-pam
