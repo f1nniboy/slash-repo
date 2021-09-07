@@ -1,0 +1,9 @@
+# Toybox
+https://github.com/landley/toybox/archive/VERSION.tar.gz toybox/
+patches/POSIX.patch toybox/
+files/.config toybox/
+
+# Busybox
+https://busybox.net/downloads/busybox-1.34.0.tar.bz2 busybox/
+patches/busybox-print-unicode.patch busybox/
+files/.busybox-config busybox/
