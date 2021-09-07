@@ -1,0 +1,26 @@
+#!/bin/sh -e
+
+# Change the names for 'halt', 'reboot' and 'poweroff'.
+for tool in halt reboot poweroff; do
+	sed -i "s/ig${tool}/${tool}/" src/ighalt.c
+done
+
+mkdir -p "$1/usr"
+
+make
+make PREFIX="/usr" install
+
+mkdir -p "$1/var/service" "$1/etc/ignite/stage"
+
+ln -s ignite "$1/usr/bin/init"
+
+ln -s /usr/lib/init/rc.boot     "$1/etc/ignite/stage/init"
+ln -s /usr/lib/init/rc.shutdown "$1/etc/ignite/stage/halt"
+install -m755 services          "$1/etc/ignite/stage/services"
+
+# Change the binary names for 'halt', 'reboot' and 'poweroff'.
+for tool in reboot poweroff; do
+	ln -sf halt "$1/usr/bin/${tool}"
+done
+
+mv "$1/usr/bin/ighalt" "$1/usr/bin/halt"

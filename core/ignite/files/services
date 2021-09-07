@@ -1,0 +1,11 @@
+#!/bin/sh
+
+PATH=/usr/bin
+
+# Start the 'getty's.
+for getty in 1 2 3; do
+    while :; do /usr/bin/getty 38400 tty${getty} 2>&1; done &
+done
+
+# Silence 'igsvmgr's output.
+exec /usr/bin/igsvmgr /var/service > /dev/null 2>&1
