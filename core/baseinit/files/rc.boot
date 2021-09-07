@@ -7,10 +7,9 @@
 log "Welcome!"
 
 log "Mounting pseudo filesystems..."; {
-	mnt nosuid,noexec,nodev		proc		proc /proc
-	mnt nosuid,noexec,nodev		sysfs		sys  /sys
-	mnt mode=0755,nosuid,nodev	tmpfs		run  /run
-	mnt mode=0755,nosuid		devtmpfs	dev  /dev
+	mnt nosuid,noexec,nodev				proc		proc /proc
+	mnt nosuid,noexec,nodev				sysfs		sys  /sys
+	mnt mode=0755,nosuid,nodev			tmpfs		run  /run
 
 	mkdir -p /dev/pts /dev/shm
 
@@ -27,8 +26,8 @@ log "Mounting pseudo filesystems..."; {
 	} 2> /dev/null
 }
 
-log "Loading rc.conf settings..."; {
-	[ -f /etc/rc.conf ] && . /etc/rc.conf
+log "Loading settings..."; {
+	load_conf
 }
 
 log "Running pre-boot hooks..."; {
@@ -36,45 +35,37 @@ log "Running pre-boot hooks..."; {
 }
 
 log "Starting device manager..."; {
-	mdev -s
-	mdev -df & mdev_pid=$!
-}
+	case ${CONFIG_DEV} in
+		mdevd)
+			mdevd & pid_mdevd=$!
+			mdevd-coldplug
+		;;
 
-log "Remounting rootfs as read-only..."; {
-	mount -o remount,ro / || sos
-}
+		mdev)
+			mdev -s
+			mdev -df & pid_mdev=$!
+		;;
 
-log "Checking filesystems..."; {
-	fsck -ATat noopts=_netdev
-
-	# It can't be assumed that success is 0
-	# and failure is > 0.
-	[ $? -gt 1 ] && sos
-}
-
-log "Mounting rootfs as read-write..."; {
-	mount -o remount,rw / || sos
+		udevd)
+			udevd -d
+			udevadm trigger -c add -t subsystems
+			udevadm trigger -c add -t devices
+			udevadm settle
+		;;
+	esac
 }
 
 log "Mounting all local filesystems..."; {
 	mount -a || sos
 }
 
-log "Enabling swap..."; {
-	swapon -a || sos
-}
-
 log "Seeding random..."; {
 	random_seed load
 }
 
-log "Setting up loopback..."; {
-	ip link set up dev lo
-}
-
 log "Setting hostname..."; {
 	read -r hostname < /etc/hostname
-	printf %s "${hostname:-slash}" > /proc/sys/kernel/hostname
+	printf "%s" "${hostname:-slash}" > /proc/sys/kernel/hostname
 } 2> /dev/null
 
 log "Loading sysctl settings..."; {
@@ -95,17 +86,21 @@ log "Loading sysctl settings..."; {
 	done
 }
 
-log "Killing device manager to make way for service..."; {
-	if [ "${mdev_pid}" ]; then
-		kill "${mdev_pid}"
+log "Killing the device manager to make way for services..."; {
+	case ${CONFIG_DEV} in
+		udevd)
+			udevadm control --exit
+		;;
 
-		# Try to set the hotplug script to mdev.
-		# This will silently fail if unavailable.
-		#
-		# The user should then run the mdev service
-		# to enable hotplugging.
-		command -v mdev > /proc/sys/kernel/hotplug
-	fi 2>/dev/null
+		mdevd)
+			kill "${pid_mdevd}"
+		;;
+
+		mdev)
+			kill "${pid_mdev}"
+			command -v mdev > /proc/sys/kernel/hotplug
+		;;
+	esac
 }
 
 log "Running post-boot hooks..."; {
@@ -116,4 +111,4 @@ log "Running post-boot hooks..."; {
 # complete. This entire process is too cheap!
 IFS=. read -r boot_time _ < /proc/uptime
 
-log "Boot stage completed in ${boot_time}s..."
+log "Boot completed in ${boot_time}s."

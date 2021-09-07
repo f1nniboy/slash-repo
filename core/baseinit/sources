@@ -1,6 +1,6 @@
-files/kall.c
-files/kpow.c
 files/rc.boot
 files/rc.conf
 files/rc.lib
 files/rc.shutdown
+files/kall.c
+files/kpow.c

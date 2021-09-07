@@ -12,19 +12,20 @@ int main (int argc, char *argv[]) {
 		return 1;
 	}
 
-	sync();
+    sync();
 
 	switch (argv[1] ? argv[1][0]: 0) {
 		case 'p':
 			reboot(RB_POWER_OFF);
 			return 0;
 
-        case 'r':
+		case 'r':
+		case 's':
 			reboot(RB_AUTOBOOT);
 			return 0;
 
 		default:
-			printf("usage: kpow r[eboot]|p[oweroff]\n");
+			printf("usage: kpow r[eboot]|p[oweroff]|s[hutdown]\n");
 			return 1;
-	}
+    }
 }

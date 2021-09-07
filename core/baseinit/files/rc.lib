@@ -10,7 +10,15 @@ log() {
 
 	# Additionally send all messages to /dev/kmsg so that they
 	# appear in 'dmesg' and can be read post-boot.
-	printf 'init: %s\n' "$@" 2>/dev/null > /dev/kmsg
+	printf 'init: %s\n' "$@" 2> /dev/null > /dev/kmsg
+}
+
+# Load the configuration and set fallbacks for CONFIG.* variables.
+load_conf() {
+	[ -f /etc/rc.conf ] && . /etc/rc.conf
+
+	: "${CONFIG_INIT:=ignite}"
+	: "${CONFIG_DEV:=mdevd}"
 }
 
 # Check if a directory is mounted.
@@ -60,17 +68,18 @@ random_seed() {
 	seed=/var/lib/init/random-seed
 
 	case $1 in
-	    save)
-	        mkdir -p "${seed%/*}" || {
-	            log "Warning: Failed to create random seed directory."
-	            return 1
-	        }
+		save)
+			mkdir -p "${seed%/*}" || {
+				log "Warning: Failed to create random seed directory."
+				return 1
+			}
 
-	        dd count=1 bs=512 if=/dev/urandom of="${seed}" >/dev/null 2>&1
-	    ;;
-
-	    load)
-	        [ -f "${seed}" ] && cat "${seed}" > /dev/urandom
-	    ;;
+			dd count=1 bs=512 if=/dev/urandom of="${seed}" > /dev/null 2>&1 ||
+				log "Warning: Failed to seed random."
+		;;
+		
+		load)
+			[ -f "${seed}" ] && cat "${seed}" > /dev/urandom
+		;;
 	esac
 }
