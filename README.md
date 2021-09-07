@@ -34,8 +34,8 @@ export CXXFLAGS="${COMMON_FLAGS}"
 export LDFLAGS="-Wl,-O3 -Wl,--as-needed ${COMMON_FLAGS}"
 ```
 
-`BASE_FLAGS` and `BASE_LDFLAGS` are set by the package manager as a fallback for
-packages that cannot be built with ThinLTO due to build failures.
+`BASE_FLAGS` and `BASE_LDFLAGS` are used as a fallback for packages
+that cannot be built with ThinLTO due to build failures.
 
 ### Enable this repository
 

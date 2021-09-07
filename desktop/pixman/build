@@ -1,8 +1,8 @@
 #!/bin/sh -e
 
 # LTO is broken.
-export CFLAGS="${BASE_FLAGS}"
-export LDFLAGS="${BASE_LDFLAGS}"
+export CFLAGS="${CFLAGS%%-flto=thin}"
+export LDFLAGS="${LDFLAGS%%-flto=thin}"
 
 ./configure \
 	--prefix=/usr \

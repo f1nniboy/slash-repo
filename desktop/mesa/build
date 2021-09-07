@@ -26,8 +26,8 @@
 export PYTHONPATH
 
 # LTO is handled by the build system.
-export CFLAGS="${BASE_FLAGS} -DGLX_X86_READONLY_TEXT"
-export LDFLAGS="${BASE_LDFLAGS}"
+export CFLAGS="${CFLAGS%%-flto=thin} -DGLX_X86_READONLY_TEXT"
+export LDFLAGS="${LDFLAGS%%-flto=thin}"
 
 # Fix issues with musl and Firefox.
 # https://bugs.freedesktop.org/show_bug.cgi?id=35268

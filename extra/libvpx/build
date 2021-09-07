@@ -1,12 +1,12 @@
 #!/bin/sh -e
 
 # LTO is broken.
-export CFLAGS="${BASE_FLAGS}"
-export CXXFLAGS="${BASE_FLAGS}"
-export LDFLAGS="${BASE_LDFLAGS}"
+export CFLAGS="${CFLAGS%%-flto=thin}"
+export CXXFLAGS="${CXXFLAGS%%-flto=thin}"
+export LDFLAGS="${LDFLAGS%%-flto=thin}"
 
-# Remove the perl requirement from configure.
-# Also fix issue with non-GNU diff.
+# Remove the Perl requirement from configure.
+# Also fix issue with non-GNU 'diff'.
 sed -i 's/perl/:/g;s/diff --version/command -v diff/' configure
 
 ./configure \

@@ -1,8 +1,8 @@
 #!/bin/sh -e
 
 # LTO is broken.
-export CFLAGS="${BASE_FLAGS}"
-export CXXFLAGS="${BASE_FLAGS}"
+export CFLAGS="${CFLAGS%%-flto=thin}"
+export CXXFLAGS="${CXXFLAGS%%-flto=thin}"
 unset LDFLAGS
 
 # Apply the patches.

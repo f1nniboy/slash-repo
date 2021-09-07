@@ -8,9 +8,9 @@ EOF
 
 # Reported 20-27% performance improvements.
 # See: "PythonNoSemanticInterpositionSpeedup"
-export CFLAGS="${BASE_FLAGS:-$CFLAGS} -fno-semantic-interposition"
-export CXXFLAGS="${BASE_FLAGS:-$CFLAGS} -fno-semantic-interposition"
-export LDFLAGS="-Wl,-O3 -Wl,--as-needed ${BASE_FLAGS:-$CFLAGS} -fno-semantic-interposition"
+export CFLAGS="${CFLAGS%%-flto=thin} -fno-semantic-interposition"
+export CXXFLAGS="${CXXLAGS%%-flto=thin} -fno-semantic-interposition"
+export LDFLAGS="-Wl,-O3 -Wl,--as-needed ${LDFLAGS%%-flto=thin} -fno-semantic-interposition"
 
 for patch in *.patch; do
 	patch -p1 < "${patch}"

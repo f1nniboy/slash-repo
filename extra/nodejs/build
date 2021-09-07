@@ -1,9 +1,9 @@
 #!/bin/sh -e
 
 # LTO is broken.
-export CFLAGS="${BASE_FLAGS}"
-export CXXFLAGS="${BASE_FLAGS}"
-export LDFLAGS="${BASE_LDFLAGS}"
+export CFLAGS="${CFLAGS%%-flto=thin}"
+export CXXFLAGS="${CXXFLAGS%%-flto=thin}"
+export LDFLAGS="${LDFLAGS%%-flto=thin}"
 
 # Remove libatomic dependency.
 sed -i 's/-latomic//' node.gyp
