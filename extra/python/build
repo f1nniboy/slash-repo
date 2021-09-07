@@ -10,7 +10,7 @@ EOF
 # See: "PythonNoSemanticInterpositionSpeedup"
 export CFLAGS="${CFLAGS%%-flto=thin} -fno-semantic-interposition"
 export CXXFLAGS="${CXXLAGS%%-flto=thin} -fno-semantic-interposition"
-export LDFLAGS="-Wl,-O3 -Wl,--as-needed ${LDFLAGS%%-flto=thin} -fno-semantic-interposition"
+export LDFLAGS="${LDFLAGS%%-flto=thin} -fno-semantic-interposition"
 
 for patch in *.patch; do
 	patch -p1 < "${patch}"
@@ -22,7 +22,8 @@ done
 	--with-system-expat \
 	--with-system-ffi \
 	--with-ensurepip=yes \
-	--without-doc-strings
+	--without-doc-strings \
+	ax_cv_c_float_words_bigendian=no
 
 make EXTRA_CFLAGS="${CFLAGS} -DTHREAD_STACK_SIZE=0x100000"
 make install
