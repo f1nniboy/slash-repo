@@ -1,0 +1,14 @@
+https://busybox.net/downloads/busybox-VERSION.tar.bz2
+patches/adduser-no-setgid.patch       patches
+patches/fix-UB+clang.patch            patches
+patches/fsck-resolve-uuid.patch       patches
+patches/modprobe-kernel-version.patch patches
+patches/print-unicode.patch           patches
+patches/install-fix-chown.patch       patches
+patches/lsusb-vendor-product.patch    patches
+patches/unzip-usage-no-error.patch    patches
+files/.config
+files/.config-suid
+files/mdev.run
+files/mdev.conf
+files/ntpd.run
