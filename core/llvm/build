@@ -59,12 +59,6 @@ ln -s clang++ "$1/usr/bin/c++"
 # clang: Equivalent for "cpp"
 ln -s clang-cpp "$1/usr/bin/cpp"
 
-# Remove static libraries using a glob.
-#
-# TODO: Add again when Rust is able to build without
-#       LLVM static libraries.
-# rm -f "$1/usr/lib"/*.a
-
 # Remove unneeded files.
 rm -rf \
 	"$1/usr/share/clang" \
