@@ -1,10 +1,14 @@
 #!/bin/sh -e
 
+# Instruct the compiler to trim absolute paths in resulting binaries and instead
+# change them to relative paths ($PWD/... ./...).
+export RUSTFLAGS="${RUSTFLAGS} --remap-path-prefix=${PWD}=."
+
 # This package mimics the download process of rust's 'x.py'
 # bootstrap library to allow for the removal of the internet
 # connection requirement per build.
 {
-	cache_dir=build/cache/2021-06-17
+	cache_dir=build/cache/2021-07-29
 	mkdir -p "${cache_dir}"
 
 	for tarball in *.tar.xz\?no-extract; do
