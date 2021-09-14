@@ -1,0 +1,9 @@
+
+The default init system has been changed to Ignite, a rewrite of Runit with
+cleaner code and new features.
+
+The 'baseinit' package now has support for multiple init systems and device
+managers.
+
+'mdevd' is now the default device manager.
+

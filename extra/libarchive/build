@@ -1,0 +1,14 @@
+#!/bin/sh -e
+
+./configure \
+	--prefix=/usr \
+	--without-nettle \
+	--without-openssl \
+	--without-xml2 \
+	--without-expat
+
+make
+make install
+
+# Remove tools we don't use.
+rm -f "$1/usr/bin/bsd"*
